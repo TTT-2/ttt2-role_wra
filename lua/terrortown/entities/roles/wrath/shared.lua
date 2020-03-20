@@ -76,8 +76,10 @@ if SERVER then
     end)
 end
 
+-- Add a convar to make the wrath see himself as an Innocent
+
 if SERVER then
-    local hide_wra_inno = GetConVar("ttt_wrath_can_see_own_role"):GetBool()
+    local hide_wra_inno = GetConVar("ttt_wrath_cannot_see_own_role"):GetBool()
    
     if hide_wra_inno then
         hook.Add("TTT2SpecialRoleSyncing", "TTT2RoleWraMod", function(ply, tbl)
@@ -91,4 +93,24 @@ if SERVER then
     else
         return
     end
+end
+
+-- Add that the Wrath will be confirmed as an Innocent
+
+if SERVER then
+	hook.Add("TTTCanSearchCorpse", "TTT2WraChangeCorpseToInnocent", function(ply, corpse)
+
+		-- Check if the Corpse is valid and if the Role was Wrath
+
+		if IsValid(corpse) and corpse.was_role == ROLE_WRATH then
+
+			-- Make the Role show Innocent
+
+			corpse.was_role = ROLE_INNOCENT
+
+			-- Make the Role Colour be that of an Innocent
+
+			corpse.role_color = INNOCENT.color
+		end
+	end)
 end

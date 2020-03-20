@@ -1,4 +1,4 @@
-CreateConVar("ttt_wrath_can_see_own_role", 0, {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED})
+CreateConVar("ttt_wrath_cannot_see_own_role", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED})
 CreateConVar("ttt_wrath_revival_time", 15, {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED})
 
 hook.Add("TTTUlxDynamicRCVars", "ttt2_ulx_dynamic_wrath_convars", function(tbl)
@@ -10,5 +10,5 @@ hook.Add("TTTUlxDynamicRCVars", "ttt2_ulx_dynamic_wrath_convars", function(tbl)
 
 	-- Implementing a ConVar that decides if the Wrath knows his role.
 
-	table.insert(tbl[ROLE_WRATH], {cvar = "ttt_wrath_can_see_own_role", checkbox = true, desc = "ttt_wrath_can_see_own_role (def. 0)"})
+	table.insert(tbl[ROLE_WRATH], {cvar = "ttt_wrath_cannot_see_own_role", checkbox = true, desc = "ttt_wrath_cannot_see_own_role (def. 1)"})
 end)
