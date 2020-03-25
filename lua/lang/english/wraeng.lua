@@ -2,7 +2,7 @@ L = LANG.GetLanguageTableReference("english")
 
 -- GENERAL ROLE LANGUAGE STRINGS
 L[WRATH.name] = "Wrath"
-L["info_popup_" .. WRATH.name] = [[You are a Wrath, work with the innocents to!]]
+L["info_popup_" .. WRATH.name] = [[You are a Wrath, work with the innocents to win!]]
 L["body_found_" .. WRATH.abbr] = "They were a Wrath."
 L["search_role_" .. WRATH.abbr] = "This person was a Wrath!"
 L["target_" .. WRATH.name] = "Wrath"
