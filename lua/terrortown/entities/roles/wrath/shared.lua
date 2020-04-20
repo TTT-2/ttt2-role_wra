@@ -55,7 +55,7 @@ if SERVER then
         
 		-- Some check for some stuff
 		
-        if victim:GetSubRole() ~= ROLE_WRATH or not IsValid(attacker) or not attacker:IsPlayer() or attacker:GetTeam() ~= TEAM_INNOCENT then return end
+        if victim:GetSubRole() ~= ROLE_WRATH or not IsValid(attacker) or not attacker:IsPlayer() or attacker:GetTeam() ~= TEAM_INNOCENT or victim == attacker then return end
 
 		--add revive function that revives after 15 seconds.
 		
