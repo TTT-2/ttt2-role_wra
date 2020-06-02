@@ -10,3 +10,5 @@ L["ttt2_desc_" .. WRATH.name] = [[Il Wrath è un innocente che collabora con gli
  e diventerà un traditore.]]
 
 -- OTHER ROLE LANGUAGE STRINGS
+
+-- L["ttt2_role_wrath_revival_message"] = "You will be revived as a Traitor"

@@ -12,7 +12,7 @@ function ROLE:PreInitialize()
     
     -- settings for the role iself
 	self.abbr = 'wra'                       -- Abbreviation
-	self.survivebonus = 1                   -- points for suurviving longer
+	self.survivebonus = 1                   -- points for surviving longer
 	self.preventFindCredits = true          -- can't take credits from bodies
 	self.preventKillCredits = true		    -- does not get awarded credits for kills
 	self.preventTraitorAloneCredits = true  -- no credits.
@@ -55,16 +55,24 @@ if SERVER then
 		if victim:GetSubRole() ~= ROLE_WRATH or not IsValid(attacker) or not attacker:IsPlayer() or attacker:GetTeam() ~= TEAM_INNOCENT or victim == attacker then return end
 
 		--add revive function that revives after 15 seconds.
-		victim:Revive(revive_wra_timer, function(p)
-			-- Set role to Traitor upon revive
-			p:SetRole(ROLE_TRAITOR)
+		victim:Revive(revive_wra_timer,
+			function(p)
+				-- Set role to Traitor upon revive
+				p:SetRole(ROLE_TRAITOR)
             
-			-- Set default credits for a new traitor
-			p:SetDefaultCredits()
+				-- Set default credits for a new traitor
+				p:SetDefaultCredits()
 
-			-- Send update to other traitors
-			SendFullStateUpdate()
-		end)
+				-- Send update to other traitors
+				SendFullStateUpdate()
+			end,
+			nil, -- DoCheck -> Nil (no need) | An additional checking @{function}
+			false, -- NeedsCorpse -> false | Whether the dead @{Player} @{CORPSE} is needed
+			true -- blockRounds -> true | Stops the round from ending if this is set to true until the player is alive again
+		)
+		
+		-- Add a revival message shown in the new revival hud element.
+		victim:SendRevivalReason("ttt2_role_wrath_revival_message")
 	end)
 end
 

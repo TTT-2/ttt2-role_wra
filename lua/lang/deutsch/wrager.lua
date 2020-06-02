@@ -10,3 +10,5 @@ L["ttt2_desc_" .. WRATH.name] = [[Der Groll versucht mit den Unschuldigen zu gew
 und wird Wiederbelebt.]]
 
 -- OTHER ROLE LANGUAGE STRINGS
+
+L["ttt2_role_wrath_revival_message"] = "Du wirst als Verräter wiederbelebt werden!"
