@@ -7,12 +7,10 @@ if SERVER then
 end
 
 -- General settings
-
 function ROLE:PreInitialize()
 	self.color = Color(085, 107, 047, 255) -- role colour
     
     -- settings for the role iself
-
 	self.abbr = 'wra'                       -- Abbreviation
 	self.survivebonus = 1                   -- points for surviving longer
 	self.preventFindCredits = true          -- can't take credits from bodies
@@ -20,17 +18,15 @@ function ROLE:PreInitialize()
 	self.preventTraitorAloneCredits = true  -- no credits.
 	self.preventWin = false                 -- cannot win unless he switches roles
 	self.scoreKillsMultiplier       = 2     -- gets points for killing enemies of their team
-    self.scoreTeamKillsMultiplier   = -8    -- loses points for killing teammates
+	self.scoreTeamKillsMultiplier   = -8    -- loses points for killing teammates
 	self.defaultEquipment = INNO_EQUIPMENT  -- here you can set up your own default equipment
 	self.disableSync = true 			    -- dont tell the player about his role
 	
 	-- settings for this roles teaminteraction
-
-    self.unknownTeam = true -- Doesn't know his teammates -> Is innocent also disables voicechat
-    self.defaultTeam = TEAM_INNOCENT -- Is part of team innocent
+	self.unknownTeam = true -- Doesn't know his teammates -> Is innocent also disables voicechat
+	self.defaultTeam = TEAM_INNOCENT -- Is part of team innocent
 
 	-- ULX convars
-
 	self.conVarData = {
 		pct = 0.17,                         -- necessary: percentage of getting this role selected (per player)
 		maximum = 1,                        -- maximum amount of roles in a round
@@ -42,7 +38,6 @@ function ROLE:PreInitialize()
 	}
 end
 
-
 function ROLE:Initialize()
 	roles.SetBaseRole(self, ROLE_INNOCENT)
 end
@@ -53,85 +48,57 @@ end
 
 if SERVER then    
 	hook.Add("PlayerDeath", "WrathDeath", function(victim, infl, attacker)
-		
 		-- create a thing for a convar
-
-        local revive_wra_timer = GetConVar("ttt_wrath_revival_time"):GetInt()
+		local revive_wra_timer = GetConVar("ttt_wrath_revival_time"):GetInt()
         
 		-- Some check for some stuff
-		
-        if victim:GetSubRole() ~= ROLE_WRATH or not IsValid(attacker) or not attacker:IsPlayer() or attacker:GetTeam() ~= TEAM_INNOCENT or victim == attacker then return end
+		if victim:GetSubRole() ~= ROLE_WRATH or not IsValid(attacker) or not attacker:IsPlayer() or attacker:GetTeam() ~= TEAM_INNOCENT or victim == attacker then return end
 
 		--add revive function that revives after 15 seconds.
-		
-		victim:Revive(revive_wra_timer, function(p)
-			
-			-- Set role to Traitor upon revive
-			
-            p:SetRole(ROLE_TRAITOR)
+		victim:Revive(revive_wra_timer,
+			function(p)
+				-- Set role to Traitor upon revive
+				p:SetRole(ROLE_TRAITOR)
             
-			-- Set default credits for a new traitor
-			
-            p:SetDefaultCredits()
+				-- Set default credits for a new traitor
+				p:SetDefaultCredits()
 
-			-- Send update to other traitors
-			
-			SendFullStateUpdate()
-		end,
-		
-		-- DoCheck -> Nil (no need) | An additional checking @{function}
-
-		nil,
-
-		-- NeedsCorpse -> false | Whether the dead @{Player} @{CORPSE} is needed
-
-		false,
-
-		-- blockRounds -> true | Stops the round from ending if this is set to true until the player is alive again
-
-		true
+				-- Send update to other traitors
+				SendFullStateUpdate()
+			end,
+			nil, -- DoCheck -> Nil (no need) | An additional checking @{function}
+			false, -- NeedsCorpse -> false | Whether the dead @{Player} @{CORPSE} is needed
+			true -- blockRounds -> true | Stops the round from ending if this is set to true until the player is alive again
 		)
 		
 		-- Add a revival message shown in the new revival hud element.
-
 		victim:SendRevivalReason("ttt2_role_wrath_revival_message")
-    end)
+	end)
 end
 
 -- Add a convar to make the wrath see himself as an Innocent
-
 if SERVER then
-    local hide_wra_inno = GetConVar("ttt_wrath_cannot_see_own_role"):GetBool()
-   
-    if hide_wra_inno then
-        hook.Add("TTT2SpecialRoleSyncing", "TTT2RoleWraMod", function(ply, tbl)
-            -- hide the role from all players (including himself)
-            for wra in pairs(tbl) do
-                if wra:IsWrath() and wra:GetNWBool("SpawnedAsWra", -1) == -1 then
-                    tbl[wra] = {ROLE_INNOCENT, TEAM_INNOCENT}
-                end
-            end
-        end)
-    else
-        return
-    end
+	hook.Add("TTT2SpecialRoleSyncing", "TTT2RoleWraMod", function(ply, tbl)
+		if not GetConVar("ttt_wrath_cannot_see_own_role"):GetBool() then return end
+	
+		-- hide the role from all players (including himself)
+		for wra in pairs(tbl) do
+			if wra:IsWrath() and wra:GetNWBool("SpawnedAsWra", -1) == -1 then
+				tbl[wra] = {ROLE_INNOCENT, TEAM_INNOCENT}
+			end
+		end
+	end)
 end
 
 -- Add that the Wrath will be confirmed as an Innocent
-
 if SERVER then
 	hook.Add("TTTCanSearchCorpse", "TTT2WraChangeCorpseToInnocent", function(ply, corpse)
-
 		-- Check if the Corpse is valid and if the Role was Wrath
-
 		if IsValid(corpse) and corpse.was_role == ROLE_WRATH then
-
 			-- Make the Role show Innocent
-
 			corpse.was_role = ROLE_INNOCENT
 
 			-- Make the Role Colour be that of an Innocent
-
 			corpse.role_color = INNOCENT.color
 		end
 	end)
