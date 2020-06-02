@@ -14,7 +14,7 @@ function ROLE:PreInitialize()
     -- settings for the role iself
 
 	self.abbr = 'wra'                       -- Abbreviation
-	self.survivebonus = 1                   -- points for suurviving longer
+	self.survivebonus = 1                   -- points for surviving longer
 	self.preventFindCredits = true          -- can't take credits from bodies
 	self.preventKillCredits = true		    -- does not get awarded credits for kills
 	self.preventTraitorAloneCredits = true  -- no credits.
@@ -40,6 +40,11 @@ function ROLE:PreInitialize()
 		togglable = true,                   -- option to toggle a role for a client if possible (F1 menu)
 		random = 33                         -- percentage of the chance that this role will be in a round (if set to 100 it will spawn in all rounds)
 	}
+end
+
+
+function ROLE:Initialize()
+	roles.SetBaseRole(self, ROLE_INNOCENT)
 end
 
 -- Role specific code
@@ -71,8 +76,25 @@ if SERVER then
 
 			-- Send update to other traitors
 			
-            SendFullStateUpdate()
-        end)
+			SendFullStateUpdate()
+		end,
+		
+		-- DoCheck -> Nil (no need) | An additional checking @{function}
+
+		nil,
+
+		-- NeedsCorpse -> false | Whether the dead @{Player} @{CORPSE} is needed
+
+		false,
+
+		-- blockRounds -> true | Stops the round from ending if this is set to true until the player is alive again
+
+		true
+		)
+		
+		-- Add a revival message shown in the new revival hud element.
+
+		victim:SendRevivalReason("ttt2_role_wrath_revival_message")
     end)
 end
 
