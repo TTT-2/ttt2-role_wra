@@ -2,16 +2,16 @@
 
 if SERVER then
 	AddCSLuaFile()
-	
-	resource.AddFile('materials/vgui/ttt/dynamic/roles/icon_wra.vmt')
+
+	resource.AddFile("materials/vgui/ttt/dynamic/roles/icon_wra.vmt")
 end
 
 -- General settings
 function ROLE:PreInitialize()
 	self.color = Color(085, 107, 047, 255) -- role colour
-    
-    -- settings for the role iself
-	self.abbr = 'wra'                       -- Abbreviation
+
+	-- settings for the role iself
+	self.abbr = "wra"                       -- Abbreviation
 	self.survivebonus = 1                   -- points for surviving longer
 	self.preventFindCredits = true          -- can't take credits from bodies
 	self.preventKillCredits = true		    -- does not get awarded credits for kills
@@ -21,7 +21,7 @@ function ROLE:PreInitialize()
 	self.scoreTeamKillsMultiplier   = -8    -- loses points for killing teammates
 	self.defaultEquipment = INNO_EQUIPMENT  -- here you can set up your own default equipment
 	self.disableSync = true 			    -- dont tell the player about his role
-	
+
 	-- settings for this roles teaminteraction
 	self.unknownTeam = true -- Doesn't know his teammates -> Is innocent also disables voicechat
 	self.defaultTeam = TEAM_INNOCENT -- Is part of team innocent
@@ -43,14 +43,13 @@ function ROLE:Initialize()
 end
 
 -- Role specific code
-
 -- Check if killer was TEAM_INNOCENT. If yes respawn Wrath as traitor.
 
-if SERVER then    
+if SERVER then
 	hook.Add("PlayerDeath", "WrathDeath", function(victim, infl, attacker)
 		-- create a thing for a convar
 		local revive_wra_timer = GetConVar("ttt_wrath_revival_time"):GetInt()
-        
+
 		-- Some check for some stuff
 		if victim:GetSubRole() ~= ROLE_WRATH or not IsValid(attacker) or not attacker:IsPlayer() or attacker:GetTeam() ~= TEAM_INNOCENT or victim == attacker then return end
 
@@ -59,7 +58,7 @@ if SERVER then
 			function(p)
 				-- Set role to Traitor upon revive
 				p:SetRole(ROLE_TRAITOR)
-            
+
 				-- Set default credits for a new traitor
 				p:SetDefaultCredits()
 
@@ -70,7 +69,7 @@ if SERVER then
 			false, -- NeedsCorpse -> false | Whether the dead @{Player} @{CORPSE} is needed
 			true -- blockRounds -> true | Stops the round from ending if this is set to true until the player is alive again
 		)
-		
+
 		-- Add a revival message shown in the new revival hud element.
 		victim:SendRevivalReason("ttt2_role_wrath_revival_message")
 	end)
@@ -80,10 +79,10 @@ end
 if SERVER then
 	hook.Add("TTT2SpecialRoleSyncing", "TTT2RoleWraMod", function(ply, tbl)
 		if not GetConVar("ttt_wrath_cannot_see_own_role"):GetBool() then return end
-	
+
 		-- hide the role from all players (including himself)
 		for wra in pairs(tbl) do
-			if wra:IsWrath() and wra:GetNWBool("SpawnedAsWra", -1) == -1 then
+			if wra:GetSubRole() == ROLE_WRATH and wra:GetNWBool("SpawnedAsWra", -1) == -1 then
 				tbl[wra] = {ROLE_INNOCENT, TEAM_INNOCENT}
 			end
 		end
