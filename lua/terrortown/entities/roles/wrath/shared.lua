@@ -54,6 +54,7 @@ if SERVER then
 		if victim:GetSubRole() ~= ROLE_WRATH or not IsValid(attacker) or not attacker:IsPlayer() or attacker:GetTeam() ~= TEAM_INNOCENT or victim == attacker then return end
 
 		--add revive function that revives after 15 seconds.
+		if victim:IsGhost( ) == false and attacker:IsGhost( ) == false then
 		victim:Revive(revive_wra_timer,
 			function(p)
 				-- Set role to Traitor upon revive
@@ -69,7 +70,7 @@ if SERVER then
 			false, -- NeedsCorpse -> false | Whether the dead @{Player} @{CORPSE} is needed
 			true -- blockRounds -> true | Stops the round from ending if this is set to true until the player is alive again
 		)
-
+		end
 		-- Add a revival message shown in the new revival hud element.
 		victim:SendRevivalReason("ttt2_role_wrath_revival_message")
 	end)
