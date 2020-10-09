@@ -62,6 +62,9 @@ if SERVER then
 				-- Set default credits for a new traitor
 				p:SetDefaultCredits()
 
+				-- Reset their confirmation status, so innocents do not see the player as a traitor
+				p:ResetConfirmPlayer()
+
 				-- Send update to other traitors
 				SendFullStateUpdate()
 			end,
