@@ -43,9 +43,9 @@ function ROLE:Initialize()
 end
 
 -- Role specific code
--- Check if killer was TEAM_INNOCENT. If yes respawn Wrath as traitor.
 
 if SERVER then
+	-- Check if killer was TEAM_INNOCENT. If yes respawn Wrath as traitor.
 	hook.Add("PlayerDeath", "WrathDeath", function(victim, infl, attacker)
 		-- create a thing for a convar
 		local revive_wra_timer = GetConVar("ttt_wrath_revival_time"):GetInt()
@@ -73,10 +73,8 @@ if SERVER then
 		-- Add a revival message shown in the new revival hud element.
 		victim:SendRevivalReason("ttt2_role_wrath_revival_message")
 	end)
-end
 
--- Add a convar to make the wrath see himself as an Innocent
-if SERVER then
+	-- Add a convar to make the wrath see himself as an Innocent
 	hook.Add("TTT2SpecialRoleSyncing", "TTT2RoleWraMod", function(ply, tbl)
 		if not GetConVar("ttt_wrath_cannot_see_own_role"):GetBool() then return end
 
@@ -87,18 +85,32 @@ if SERVER then
 			end
 		end
 	end)
-end
 
--- Add that the Wrath will be confirmed as an Innocent
-if SERVER then
+	-- Add that the Wrath will be confirmed as an Innocent
 	hook.Add("TTTCanSearchCorpse", "TTT2WraChangeCorpseToInnocent", function(ply, corpse)
 		-- Check if the Corpse is valid and if the Role was Wrath
 		if IsValid(corpse) and corpse.was_role == ROLE_WRATH then
-			-- Make the Role show Innocent
+			-- Make the Role show as Innocent
 			corpse.was_role = ROLE_INNOCENT
 
 			-- Make the Role Colour be that of an Innocent
 			corpse.role_color = INNOCENT.color
+
+			-- Save the Corpse's true role for reference
+			corpse.is_wrath_corpse = true
+		end
+	end)
+
+	-- Add that the Wrath will be shown as an Innocent on the Scoreboard
+	hook.Add("TTT2ConfirmPlayer", "TTT2SpyChangeRoleToTraitor", function(confirmed, finder, corpse)
+		-- Check if the corse is valid and if the Role was Wrath
+		if IsValid(confirmed) and corpse and corpse.is_wrath_corpse then
+			-- Make the Role show as Innocent on the scoreboard
+			confirmed:ConfirmPlayer(true)
+			SendRoleListMessage(ROLE_INNOCENT, TEAM_INNOCENT, {confirmed:EntIndex()})
+			SCORE:HandleBodyFound(finder, confirmed)
+
+			return false
 		end
 	end)
 end
