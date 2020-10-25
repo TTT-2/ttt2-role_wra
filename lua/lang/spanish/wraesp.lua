@@ -11,4 +11,4 @@ por un inocente. Si esto sucede, revivirá como traidor.]]
 
 -- OTHER ROLE LANGUAGE STRINGS
 
-L["ttt2_role_wrath_revival_message"] = "You will be revived as a Traitor!"
+L["ttt2_role_wrath_revival_message"] = "¡Serás revivido como Traidor!"
