@@ -105,7 +105,7 @@ if SERVER then
 	end)
 
 	-- Add that the Wrath will be shown as an Innocent on the Scoreboard
-	hook.Add("TTT2ConfirmPlayer", "TTT2SpyChangeRoleToTraitor", function(confirmed, finder, corpse)
+	hook.Add("TTT2ConfirmPlayer", "TTT2WrathChangeRoleToTraitor", function(confirmed, finder, corpse)
 		-- Check if the corse is valid and if the Role was Wrath
 		if IsValid(confirmed) and corpse and corpse.is_wrath_corpse then
 			-- Make the Role show as Innocent on the scoreboard
