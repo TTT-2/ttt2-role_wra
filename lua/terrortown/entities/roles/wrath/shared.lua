@@ -111,7 +111,7 @@ if SERVER then
 			-- Make the Role show as Innocent on the scoreboard
 			confirmed:ConfirmPlayer(true)
 			SendRoleListMessage(ROLE_INNOCENT, TEAM_INNOCENT, {confirmed:EntIndex()})
-			SCORE:HandleBodyFound(finder, confirmed)
+			events.Trigger(EVENT_BODYFOUND, finder, corpse)
 
 			return false
 		end
