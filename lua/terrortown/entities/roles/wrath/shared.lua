@@ -52,6 +52,7 @@ if SERVER then
 
 		-- Some check for some stuff
 		if victim:GetSubRole() ~= ROLE_WRATH or not IsValid(attacker) or not attacker:IsPlayer() or attacker:GetTeam() ~= TEAM_INNOCENT or victim == attacker then return end
+		if SpecDM and (victim.IsGhost and victim:IsGhost() or (attacker.IsGhost and attacker:IsGhost())) then return end
 
 		--add revive function that revives after 15 seconds.
 		victim:Revive(revive_wra_timer,
