@@ -85,7 +85,14 @@ if SERVER then
 		-- hide the role from all players (including himself)
 		for wra in pairs(tbl) do
 			if wra:GetSubRole() == ROLE_WRATH and wra:GetNWBool("SpawnedAsWra", -1) == -1 then
-				tbl[wra] = {ROLE_INNOCENT, TEAM_INNOCENT}
+				-- show innocent for himself
+				if ply == wra then
+					tbl[wra] = {ROLE_INNOCENT, TEAM_INNOCENT}
+					
+				-- show none for everyone else
+				else
+					tbl[wra] = {ROLE_NONE, TEAM_NONE}
+				end
 			end
 		end
 	end)
