@@ -13,11 +13,11 @@ function ROLE:PreInitialize()
 	self.abbr = "wra"                       -- Abbreviation
 	self.survivebonus = 1                   -- points for surviving longer
 	self.preventFindCredits = true          -- can't take credits from bodies
-	self.preventKillCredits = true		    -- does not get awarded credits for kills
+	self.preventKillCredits = true          -- does not get awarded credits for kills
 	self.preventTraitorAloneCredits = true  -- no credits.
 	self.preventWin = false                 -- cannot win unless he switches roles
-	self.scoreKillsMultiplier       = 2     -- gets points for killing enemies of their team
-	self.scoreTeamKillsMultiplier   = -8    -- loses points for killing teammates
+	self.score.killsMultiplier = 2          -- gets points for killing enemies of their team
+	self.score.teamKillsMultiplier = -8     -- loses points for killing teammates
 	self.defaultEquipment = INNO_EQUIPMENT  -- here you can set up your own default equipment
 	self.disableSync = true 			    -- dont tell the player about his role
 
