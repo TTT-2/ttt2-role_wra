@@ -1,8 +1,7 @@
--- Icon Materials
-
 if SERVER then
 	AddCSLuaFile()
 
+	-- Icon Materials
 	resource.AddFile("materials/vgui/ttt/dynamic/roles/icon_wra.vmt")
 end
 
