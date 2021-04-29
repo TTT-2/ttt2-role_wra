@@ -19,7 +19,7 @@ function ROLE:PreInitialize()
 	self.score.killsMultiplier = 2          -- gets points for killing enemies of their team
 	self.score.teamKillsMultiplier = -8     -- loses points for killing teammates
 	self.defaultEquipment = INNO_EQUIPMENT  -- here you can set up your own default equipment
-	self.disableSync = true 			    -- dont tell the player about his role
+	self.disableSync = true                 -- dont tell the player about his role
 
 	-- settings for this roles teaminteraction
 	self.unknownTeam = true -- Doesn't know his teammates -> Is innocent also disables voicechat
