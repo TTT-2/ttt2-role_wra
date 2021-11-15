@@ -1,0 +1,12 @@
+{
+	"title"		:	"[TTT2] Wrath",
+	"type"		:	"ServerContent",
+    "tags"		:	[ "roleplay", "fun" ],
+    "ignore"    : [
+        ".git/*",
+        ".gitignore",
+		".gitattributes",
+        "README.md",
+		"ttt2-role_mark.jpg"
+    ]
+}

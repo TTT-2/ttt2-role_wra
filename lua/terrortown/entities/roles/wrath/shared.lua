@@ -70,7 +70,7 @@ if SERVER then
 			end,
 			nil, -- DoCheck -> Nil (no need) | An additional checking @{function}
 			false, -- NeedsCorpse -> false | Whether the dead @{Player} @{CORPSE} is needed
-			true -- blockRounds -> true | Stops the round from ending if this is set to true until the player is alive again
+			REVIVAL_BLOCK_ALL -- Stops the round from ending if this is set to true until the player is alive again
 		)
 
 		-- Add a revival message shown in the new revival hud element.
@@ -84,12 +84,11 @@ if SERVER then
 		-- hide the role from all players (including himself)
 		for wra in pairs(tbl) do
 			if wra:GetSubRole() == ROLE_WRATH and wra:GetNWBool("SpawnedAsWra", -1) == -1 then
-				-- show innocent for himself
 				if ply == wra then
+					-- show innocent for himself
 					tbl[wra] = {ROLE_INNOCENT, TEAM_INNOCENT}
-					
-				-- show none for everyone else
 				else
+					-- show none for everyone else
 					tbl[wra] = {ROLE_NONE, TEAM_NONE}
 				end
 			end
