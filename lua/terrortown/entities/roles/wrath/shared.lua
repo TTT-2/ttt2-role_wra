@@ -123,3 +123,22 @@ if SERVER then
 		end
 	end)
 end
+
+if CLIENT then
+	function ROLE:AddToSettingsMenu(parent)
+		local form = vgui.CreateTTT2Form(parent, "header_roles_additional")
+
+		form:MakeCheckBox({
+			serverConvar = "ttt_wrath_cannot_see_own_role",
+			label = "label_wrath_cannot_see_own_role"
+		})
+
+		form:MakeSlider({
+			serverConvar = "ttt_wrath_revival_time",
+			label = "label_wrath_revival_time",
+			min = 0,
+			max = 100,
+			decimal = 0
+		})
+	end
+end

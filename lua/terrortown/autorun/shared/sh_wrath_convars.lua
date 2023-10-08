@@ -1,23 +1,17 @@
 CreateConVar("ttt_wrath_cannot_see_own_role", 1, {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED})
 CreateConVar("ttt_wrath_revival_time", 15, {FCVAR_ARCHIVE, FCVAR_NOTIFY, FCVAR_REPLICATED})
 
-hook.Add("TTTUlxDynamicRCVars", "ttt2_ulx_dynamic_wrath_convars", function(tbl)
-	tbl[ROLE_WRATH] = tbl[ROLE_WRATH] or {}
+if SERVER then
+	hook.Add("TTT2SyncGlobals", "ttt2_wrath_sync_convars", function()
+		SetGlobalBool("ttt_wrath_cannot_see_own_role", GetConVar("ttt_wrath_cannot_see_own_role"):GetBool())
+		SetGlobalInt("ttt_wrath_revival_time", GetConVar("ttt_wrath_revival_time"):GetInt())
+	end)
 
-	-- Implementing a ConVar for the Wraths revival time.
-	table.insert(tbl[ROLE_WRATH], {
-		cvar = "ttt_wrath_revival_time",
-		slider = true,
-		min = 0,
-		max = 100,
-		decimal = 0,
-		desc = "ttt_wrath_revival_time (def. 15)"
-	})
+	cvars.AddChangeCallback("ttt_wrath_cannot_see_own_role", function(cv, old, new)
+		SetGlobalBool("ttt_wrath_cannot_see_own_role", tobool(tonumber(new)))
+	end)
 
-	-- Implementing a ConVar that decides if the Wrath knows his role.
-	table.insert(tbl[ROLE_WRATH], {
-		cvar = "ttt_wrath_cannot_see_own_role",
-		checkbox = true,
-		desc = "ttt_wrath_cannot_see_own_role (def. 1)"
-	})
-end)
+	cvars.AddChangeCallback("ttt_wrath_revival_time", function(cv, old, new)
+		SetGlobalInt("ttt_wrath_revival_time", tonumber(new))
+	end)
+end

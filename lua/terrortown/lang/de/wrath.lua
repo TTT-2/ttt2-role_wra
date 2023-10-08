@@ -12,3 +12,6 @@ und wird Wiederbelebt.]]
 -- OTHER ROLE LANGUAGE STRINGS
 
 L["ttt2_role_wrath_revival_message"] = "Du wirst als Verräter wiederbelebt werden!"
+
+--L["label_wrath_cannot_see_own_role"] = "Wrath sees themselves as innocent"
+--L["label_wrath_revival_time"] = "Time until revival"
