@@ -12,3 +12,6 @@ L["ttt2_desc_" .. WRATH.name] = [[Гнев - это невиновная рол�
 -- OTHER ROLE LANGUAGE STRINGS
 
 L["ttt2_role_wrath_revival_message"] = "Вы будете воскрешены как предатель!"
+
+--L["label_wrath_cannot_see_own_role"] = "Wrath sees themselves as innocent"
+--L["label_wrath_revival_time"] = "Time until revival"

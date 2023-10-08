@@ -12,3 +12,6 @@ por un inocente. Si esto sucede, revivirá como traidor.]]
 -- OTHER ROLE LANGUAGE STRINGS
 
 L["ttt2_role_wrath_revival_message"] = "¡Serás revivido como Traidor!"
+
+--L["label_wrath_cannot_see_own_role"] = "Wrath sees themselves as innocent"
+--L["label_wrath_revival_time"] = "Time until revival"

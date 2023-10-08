@@ -12,3 +12,6 @@ L["ttt2_desc_" .. WRATH.name] = [[The Wrath is an innocent role and works with t
 -- OTHER ROLE LANGUAGE STRINGS
 
 L["ttt2_role_wrath_revival_message"] = "You will be revived as a Traitor!"
+
+L["label_wrath_cannot_see_own_role"] = "Wrath sees themselves as innocent"
+L["label_wrath_revival_time"] = "Time until revival"
