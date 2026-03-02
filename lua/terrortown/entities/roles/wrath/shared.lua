@@ -3,6 +3,10 @@ if SERVER then
 
 	-- Icon Materials
 	resource.AddFile("materials/vgui/ttt/dynamic/roles/icon_wra.vmt")
+
+	-- Network strings for respawn choice interface
+	util.AddNetworkString("ttt2_wrath_key_respawn")
+	util.AddNetworkString("ttt2_wrath_show_reason")
 end
 
 -- General settings
@@ -46,50 +50,85 @@ end
 if SERVER then
 	-- Check if killer was TEAM_INNOCENT. If yes respawn Wrath as traitor.
 	hook.Add("PlayerDeath", "WrathDeath", function(victim, infl, attacker)
-		-- create a thing for a convar
+		-- Create local variables for convars
 		local revive_wra_timer = GetConVar("ttt_wrath_revival_time"):GetInt()
+		local min_revive_wra_timer = GetConVar("ttt_wrath_min_revival_time"):GetInt()
 
 		-- Some check for some stuff
+		if GetRoundState() ~= ROUND_ACTIVE then return end
 		if victim:GetSubRole() ~= ROLE_WRATH or not IsValid(attacker) or not attacker:IsPlayer() or attacker:GetTeam() ~= TEAM_INNOCENT or victim == attacker then return end
 		if SpecDM and (victim.IsGhost and victim:IsGhost() or (attacker.IsGhost and attacker:IsGhost())) then return end
 
-		--add revive function that revives after 15 seconds.
-		victim:Revive(revive_wra_timer,
-			function(p)
-				-- Set role to Traitor upon revive
-				p:SetRole(ROLE_TRAITOR)
+		-- Start a revival process that defaults to respawning at corpse.
+		local function OnWrathRevive(p)
+			-- Set role to Traitor upon revive
+			p:SetRole(ROLE_TRAITOR)
 
-				-- Set default credits for a new traitor
-				p:SetDefaultCredits()
+			-- Set default credits for a new traitor
+			p:SetDefaultCredits()
 
-				-- Reset their confirmation status, so innocents do not see the player as a traitor
-				p:ResetConfirmPlayer()
+			-- Reset their confirmation status, so innocents do not see the player as a traitor
+			p:ResetConfirmPlayer()
 
-				-- Send update to other traitors
-				SendFullStateUpdate()
-			end,
-			nil, -- DoCheck -> Nil (no need) | An additional checking @{function}
-			false, -- NeedsCorpse -> false | Whether the dead @{Player} @{CORPSE} is needed
-			REVIVAL_BLOCK_ALL -- Stops the round from ending if this is set to true until the player is alive again
-		)
+			-- Send update to other traitors
+			SendFullStateUpdate()
+		end
 
-		-- Add a revival message shown in the new revival hud element.
-		victim:SendRevivalReason("ttt2_role_wrath_revival_message")
+		-- Function to call if the revival fails for some reason
+		local function OnFail(ply, failMessage)
+			if IsValid(ply) then
+				ply:SendRevivalReason(nil)
+				ply:TTT2NETSetBool("WrathRespawningAllowkey", false)
+				LANG.Msg(ply, failMessage, nil, MSG_MSTACK_WARN)
+			end
+		end
+
+		-- Default: Respawn at corpse
+		victim:Revive(revive_wra_timer, OnWrathRevive, nil, false, REVIVAL_BLOCK_ALL, OnFail)
+		-- nil - DoCheck -> Nil (no need) | An additional checking @{function}
+		-- false - NeedsCorpse -> false | Whether the dead @{Player} @{CORPSE} is needed
+		-- REVIVAL_BLOCK_ALL - Stops the round from ending if this is set to true until the player is alive again
+
+		-- Allow the player to choose spawn after a short delay
+		timer.Simple(min_revive_wra_timer, function()
+			if not IsValid(victim) then return end
+			victim:TTT2NETSetBool("WrathRespawningAllowkey", true)
+			net.Start("ttt2_wrath_show_reason")
+			net.Send(victim)
+		end)
 	end)
 
 	-- Add a convar to make the wrath see himself as an Innocent
 	hook.Add("TTT2SpecialRoleSyncing", "TTT2RoleWraMod", function(ply, tbl)
-		if not GetConVar("ttt_wrath_cannot_see_own_role"):GetBool() then return end
+		local convarHide = GetConVar("ttt_wrath_cannot_see_own_role"):GetBool()
 
-		-- hide the role from all players (including himself)
-		for wra in pairs(tbl) do
-			if wra:GetSubRole() == ROLE_WRATH and wra:GetNWBool("SpawnedAsWra", -1) == -1 then
-				if ply == wra then
-					-- show innocent for himself
-					tbl[wra] = {ROLE_INNOCENT, TEAM_INNOCENT}
-				else
-					-- show none for everyone else
-					tbl[wra] = {ROLE_NONE, TEAM_NONE}
+		-- If convar is off and no Wrath was previously confirmed, do nothing.
+		local hasConfirmed = false
+		for _, q in ipairs(player.GetAll()) do
+			if IsValid(q) and q:GetNWBool("WrathConfirmed", false) then
+				hasConfirmed = true
+				break
+			end
+		end
+
+		if not convarHide and not hasConfirmed then return end
+
+		local deadPly = ply and not ply:Alive()
+
+		-- Iterate all players (includes dead ones)
+		for _, p in ipairs(player.GetAll()) do
+			if IsValid(p) and p:GetSubRole() == ROLE_WRATH then
+				-- If this Wrath was confirmed earlier, always show them as Innocent
+				if p:GetNWBool("WrathConfirmed", false) then
+					tbl[p] = {ROLE_INNOCENT, TEAM_INNOCENT}
+				elseif convarHide then
+					-- When convar enabled, hide from others but show to self and
+					-- dead viewers only if the Wrath player is actually dead.
+					if ply == p or (deadPly and not p:Alive()) then
+						tbl[p] = {ROLE_INNOCENT, TEAM_INNOCENT}
+					else
+						tbl[p] = {ROLE_NONE, TEAM_NONE}
+					end
 				end
 			end
 		end
@@ -116,11 +155,67 @@ if SERVER then
 		if IsValid(confirmed) and corpse and corpse.is_wrath_corpse then
 			-- Make the Role show as Innocent on the scoreboard
 			confirmed:ConfirmPlayer(true)
+
+			-- Mark this player as having been confirmed as a Wrath
+			confirmed:SetNWBool("WrathConfirmed", true)
+
 			SendRoleListMessage(ROLE_INNOCENT, TEAM_INNOCENT, {confirmed:EntIndex()})
 			events.Trigger(EVENT_BODYFOUND, finder, corpse)
 
 			return false
 		end
+	end)
+
+	-- Clear WrathConfirmed and WrathRespawningAllowkey flags at round prepare
+	hook.Add("TTTPrepareRound", "TTT2WrathClearFlags", function()
+		for _, p in ipairs(player.GetAll()) do
+			if IsValid(p) then
+				p:SetNWBool("WrathConfirmed", false)
+				p:TTT2NETSetBool("WrathRespawningAllowkey", false)
+			end
+		end
+	end)
+
+	-- Handle key respawn: Cancel current revival and respawn immediately
+	net.Receive("ttt2_wrath_key_respawn", function(len, ply)
+		if GetRoundState() ~= ROUND_ACTIVE then return end
+		if not IsValid(ply) or not ply:TTT2NETGetBool("WrathRespawningAllowkey", false) or ply:IsTerror() then return end
+		local respawnAtCorpse = net.ReadBool()
+
+		-- Cancel existing revival and respawn immediately with chosen spawn
+		ply:CancelRevival(nil, true)
+		ply:SendRevivalReason(nil)
+		ply:TTT2NETSetBool("WrathRespawningAllowkey", false)
+
+		local spawnPos, spawnAngle
+		if not respawnAtCorpse then
+			local spawnPoint = plyspawn.GetRandomSafePlayerSpawnPoint(ply)
+			if spawnPoint then
+				spawnPos = spawnPoint.pos
+				spawnAngle = spawnPoint.ang
+			end
+		end
+
+		-- Immediately revive at chosen position
+		ply:Revive(0,
+			function(p)
+				p:SetRole(ROLE_TRAITOR)
+				p:SetDefaultCredits()
+				p:ResetConfirmPlayer()
+				SendFullStateUpdate()
+			end,
+			nil,
+			false,
+			REVIVAL_BLOCK_ALL,
+			function(p, failMessage)
+				if IsValid(p) then
+					p:TTT2NETSetBool("WrathRespawningAllowkey", false)
+					LANG.Msg(p, failMessage, nil, MSG_MSTACK_WARN)
+				end
+			end,
+			spawnPos,
+			spawnAngle
+		)
 	end)
 end
 
@@ -140,5 +235,35 @@ if CLIENT then
 			max = 100,
 			decimal = 0
 		})
+
+		form:MakeSlider({
+			serverConvar = "ttt_wrath_min_revival_time",
+			label = "label_wrath_min_revival_time",
+			min = 0,
+			max = 100,
+			decimal = 0
+		})
 	end
+
+	net.Receive("ttt2_wrath_show_reason", function()
+		local corpseKey = bind.Find("ttt2_wrath_respawn_corpse") == KEY_NONE and "NONE" or string.upper(input.GetKeyName(bind.Find("ttt2_wrath_respawn_corpse")))
+		local spawnKey = bind.Find("ttt2_wrath_respawn_spawn") == KEY_NONE and "NONE" or string.upper(input.GetKeyName(bind.Find("ttt2_wrath_respawn_spawn")))
+		LocalPlayer():SetRevivalReason("ttt2_role_wrath_revive_keys", {keycorpse = corpseKey, keyspawn = spawnKey})
+	end)
+
+	hook.Add("Initialize", "TTT2WrathKeyBinds", function()
+		bind.Register("ttt2_wrath_respawn_corpse", function()
+			if not LocalPlayer():TTT2NETGetBool("WrathRespawningAllowkey", false) then return end
+			net.Start("ttt2_wrath_key_respawn")
+			net.WriteBool(true)
+			net.SendToServer()
+		end, nil, "label_wrath_binding_header", "label_wrath_binding_corpse", KEY_R)
+
+		bind.Register("ttt2_wrath_respawn_spawn", function()
+			if not LocalPlayer():TTT2NETGetBool("WrathRespawningAllowkey", false) then return end
+			net.Start("ttt2_wrath_key_respawn")
+			net.WriteBool(false)
+			net.SendToServer()
+		end, nil, "label_wrath_binding_header", "label_wrath_binding_spawn", KEY_SPACE)
+	end)
 end

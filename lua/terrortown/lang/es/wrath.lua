@@ -1,4 +1,4 @@
-L = LANG.GetLanguageTableReference("es")
+local L = LANG.GetLanguageTableReference("es")
 
 -- GENERAL ROLE LANGUAGE STRINGS
 L[WRATH.name] = "Rabioso"
@@ -10,8 +10,12 @@ L["ttt2_desc_" .. WRATH.name] = [[El Rabioso es un inocente que tiene la chance 
 por un inocente. Si esto sucede, revivirá como traidor.]]
 
 -- OTHER ROLE LANGUAGE STRINGS
-
-L["ttt2_role_wrath_revival_message"] = "¡Serás revivido como Traidor!"
+L["ttt2_role_wrath_revive_keys"] = "¡Serás revivido como Traidor!\nPulsa {keycorpse} para reaparecer junto a tu cadáver.\nPulsa {keyspawn} para reaparecer en el punto de reaparición."
 
 --L["label_wrath_cannot_see_own_role"] = "Wrath sees themselves as innocent"
 --L["label_wrath_revival_time"] = "Time until revival"
+--L["label_wrath_min_revival_time"] = "Time until the player may use a key to respawn"
+
+--L["label_wrath_binding_header"] = "Roles"
+--L["label_wrath_binding_corpse"] = "Wrath - Respawn at corpse"
+--L["label_wrath_binding_spawn"] = "Wrath - Respawn at spawn"
