@@ -1,4 +1,4 @@
-L = LANG.GetLanguageTableReference("ru")
+local L = LANG.GetLanguageTableReference("ru")
 
 -- GENERAL ROLE LANGUAGE STRINGS
 L[WRATH.name] = "Гнев"
@@ -10,8 +10,12 @@ L["ttt2_desc_" .. WRATH.name] = [[Гнев - это невиновная рол�
  и превратится в предателя.]]
 
 -- OTHER ROLE LANGUAGE STRINGS
-
-L["ttt2_role_wrath_revival_message"] = "Вы будете воскрешены как предатель!"
+L["ttt2_role_wrath_revive_keys"] = "Вы будете воскрешены как предатель!\nНажмите {keycorpse}, чтобы возродиться у вашего трупа.\nНажмите {keyspawn}, чтобы возродиться на месте возрождения."
 
 --L["label_wrath_cannot_see_own_role"] = "Wrath sees themselves as innocent"
 --L["label_wrath_revival_time"] = "Time until revival"
+--L["label_wrath_min_revival_time"] = "Time until the player may use a key to respawn"
+
+--L["label_wrath_binding_header"] = "Roles"
+--L["label_wrath_binding_corpse"] = "Wrath - Respawn at corpse"
+--L["label_wrath_binding_spawn"] = "Wrath - Respawn at spawn"

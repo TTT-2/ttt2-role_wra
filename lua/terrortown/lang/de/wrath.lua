@@ -1,4 +1,4 @@
-L = LANG.GetLanguageTableReference("de")
+local L = LANG.GetLanguageTableReference("de")
 
 -- GENERAL ROLE LANGUAGE STRINGS
 L[WRATH.name] = "Groll"
@@ -10,8 +10,12 @@ L["ttt2_desc_" .. WRATH.name] = [[Der Groll versucht mit den Unschuldigen zu gew
 und wird Wiederbelebt.]]
 
 -- OTHER ROLE LANGUAGE STRINGS
+L["ttt2_role_wrath_revive_keys"] = "Du wirst als Verräter wiederbelebt werden!\nDrücke {keycorpse}, um an deiner Leiche wiederbelebt zu werden.\nDrücke {keyspawn}, um am Spawnpunkt wiederbelebt zu werden."
 
-L["ttt2_role_wrath_revival_message"] = "Du wirst als Verräter wiederbelebt werden!"
+L["label_wrath_cannot_see_own_role"] = "Groll sieht sich selbst als Unschuldiger"
+L["label_wrath_revival_time"] = "Zeit bis zur Wiederbelebung"
+L["label_wrath_min_revival_time"] = "Zeit bis der Spieler eine Taste zum Wiederbeleben benutzen darf"
 
---L["label_wrath_cannot_see_own_role"] = "Wrath sees themselves as innocent"
---L["label_wrath_revival_time"] = "Time until revival"
+L["label_wrath_binding_header"] = "Rollen"
+L["label_wrath_binding_corpse"] = "Groll - Wiederbelebung an Leiche"
+L["label_wrath_binding_spawn"] = "Groll - Wiederbelebung am Spawn"
